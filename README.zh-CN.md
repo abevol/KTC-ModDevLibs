@@ -19,7 +19,7 @@ BIE6_Mono/            # Mono 版本引用库
 
 ## 使用方式
 
-### 作为 Git Submodule 使用（推荐）
+### 1. 添加为 Git Submodule
 
 ```bash
 # 在模组项目根目录下
@@ -27,7 +27,7 @@ mkdir -p deps
 git submodule add https://github.com/abevol/KTC-ModDevLibs.git deps/KTC-ModDevLibs
 ```
 
-推荐的目录结构：
+目录结构：
 
 ```
 YourModProject/
@@ -39,7 +39,7 @@ YourModProject/
   ...
 ```
 
-### 在 .csproj 中引用
+### 2. 在 .csproj 中添加引用
 
 添加 submodule 后，在 `.csproj` 中添加引用：
 
@@ -57,19 +57,7 @@ YourModProject/
 </Reference>
 ```
 
-### 克隆包含 Submodule 的项目
-
-当克隆使用了本库作为 submodule 的项目时：
-
-```bash
-git clone --recurse-submodules <your-project-url>
-```
-
-如果已经克隆但没有拉取 submodule：
-
-```bash
-git submodule update --init --recursive
-```
+> **克隆已有项目**：克隆已使用本 submodule 的项目时，用 `git clone --recurse-submodules <url>` 可一次性拉取所有内容。如果已克隆但未拉取 submodule，运行 `git submodule update --init --recursive`。
 
 ## 程序集来源
 

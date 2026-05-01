@@ -19,7 +19,7 @@ BIE6_Mono/            # Mono version reference libraries
 
 ## Usage
 
-### Adding as a Git Submodule (Recommended)
+### 1. Add as Git Submodule
 
 ```bash
 # In your mod project root directory
@@ -39,7 +39,7 @@ YourModProject/
   ...
 ```
 
-### Reference in .csproj
+### 2. Reference in .csproj
 
 After adding the submodule, add references in your `.csproj`:
 
@@ -57,19 +57,7 @@ After adding the submodule, add references in your `.csproj`:
 </Reference>
 ```
 
-### Cloning a Project with Submodules
-
-When cloning a project that uses this library as a submodule:
-
-```bash
-git clone --recurse-submodules <your-project-url>
-```
-
-Or if you already cloned without submodules:
-
-```bash
-git submodule update --init --recursive
-```
+> **Cloning an existing project**: When cloning a project that already uses this submodule, run `git clone --recurse-submodules <url>` to pull everything at once. If you've already cloned without submodules, run `git submodule update --init --recursive`.
 
 ## Assembly Sources
 
