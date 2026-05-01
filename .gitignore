@@ -1,0 +1,12 @@
+# Decompiled game source code (not needed for mod development)
+Decompiled/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
