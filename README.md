@@ -1,69 +1,90 @@
+<p align="right">English · <a href="README.zh-CN.md">中文</a></p>
+
 # KTC-ModDevLibs
 
-Kingdom Two Crowns 模组开发引用库集合。为 BepInEx 模组项目提供编译时所需的依赖程序集引用，支持 IL2CPP 与 Mono 两种游戏版本。
+Kingdom Two Crowns modding reference library collection. Provides compile-time dependency assemblies for [BepInEx](https://github.com/BepInEx/BepInEx) mod projects, supporting both **IL2CPP** and **Mono** game versions.
 
-## 目录结构
-
-```
-BIE6_IL2CPP/          # IL2CPP 版本引用库
-  core/               # BepInEx 核心程序集 (0Harmony, BepInEx.Core, Il2CppInterop 等)
-  interop/            # IL2CPP 互操作程序集 (Unity 引擎、游戏程序集等)
-BIE6_Mono/            # Mono 版本引用库
-  core/               # BepInEx 核心程序集 (0Harmony, BepInEx.Core, Mono.Cecil 等)
-  Managed/            # Mono Managed 程序集 (Unity 引擎、游戏程序集、公版化 Assembly-CSharp 等)
-  MakePublic.bat      # Assembly-CSharp 公版化工具
-  BepInEx.AssemblyPublicizer.Cli.exe  # 程序集公版化 CLI
-```
-
-## 使用方式
-
-### 在你的模组项目中引用
-
-将此仓库克隆到你的模组项目同级目录，然后在 `.csproj` 中添加引用：
-
-```xml
-<!-- IL2CPP 版本引用示例 -->
-<Reference Include="Assembly-CSharp">
-  <HintPath>..\..\KTC-ModDevLibs\BIE6_IL2CPP\interop\Assembly-CSharp.dll</HintPath>
-  <Private>False</Private>
-</Reference>
-
-<!-- Mono 版本引用示例 -->
-<Reference Include="UnityEngine.CoreModule">
-  <HintPath>..\..\KTC-ModDevLibs\BIE6_Mono\Managed\UnityEngine.CoreModule.dll</HintPath>
-  <Private>False</Private>
-</Reference>
-```
-
-### 推荐目录结构
+## Directory Structure
 
 ```
-KingdomTwoCrowns/
-  KTC-ModDevLibs/     # 本仓库 - 共享引用库
-  YourModProject/     # 你的模组项目
+BIE6_IL2CPP/          # IL2CPP version reference libraries
+  core/               # BepInEx core assemblies (0Harmony, BepInEx.Core, Il2CppInterop, etc.)
+  interop/            # IL2CPP interop assemblies (Unity Engine, game assemblies, etc.)
+BIE6_Mono/            # Mono version reference libraries
+  core/               # BepInEx core assemblies (0Harmony, BepInEx.Core, Mono.Cecil, etc.)
+  Managed/            # Mono managed assemblies (Unity Engine, game assemblies, publicized Assembly-CSharp, etc.)
+  MakePublic.bat      # Assembly-CSharp publicizer tool
+  BepInEx.AssemblyPublicizer.Cli.exe  # Assembly publicizer CLI
 ```
 
-### 作为 Git Submodule 使用（推荐）
+## Usage
+
+### Adding as a Git Submodule (Recommended)
 
 ```bash
-# 在模组项目根目录下添加 submodule
-git submodule add https://github.com/your-org/KTC-ModDevLibs.git ../KTC-ModDevLibs
+# In your mod project root directory
+mkdir -p deps
+git submodule add https://github.com/abevol/KTC-ModDevLibs.git deps/KTC-ModDevLibs
 ```
 
-## 程序集来源
+This creates the following directory structure:
 
-| 程序集 | 来源 |
-|--------|------|
+```
+YourModProject/
+  deps/
+    KTC-ModDevLibs/     # Reference library (submodule)
+      BIE6_IL2CPP/
+      BIE6_Mono/
+  YourMod.csproj
+  ...
+```
+
+### Reference in .csproj
+
+After adding the submodule, add references in your `.csproj`:
+
+```xml
+<!-- IL2CPP build references -->
+<Reference Include="Assembly-CSharp">
+  <HintPath>..\deps\KTC-ModDevLibs\BIE6_IL2CPP\interop\Assembly-CSharp.dll</HintPath>
+  <Private>False</Private>
+</Reference>
+
+<!-- Mono build references -->
+<Reference Include="UnityEngine.CoreModule">
+  <HintPath>..\deps\KTC-ModDevLibs\BIE6_Mono\Managed\UnityEngine.CoreModule.dll</HintPath>
+  <Private>False</Private>
+</Reference>
+```
+
+### Cloning a Project with Submodules
+
+When cloning a project that uses this library as a submodule:
+
+```bash
+git clone --recurse-submodules <your-project-url>
+```
+
+Or if you already cloned without submodules:
+
+```bash
+git submodule update --init --recursive
+```
+
+## Assembly Sources
+
+| Assembly | Source |
+|----------|--------|
 | 0Harmony.dll | [Harmony](https://github.com/pardeike/Harmony) |
 | BepInEx.Core.dll | [BepInEx](https://github.com/BepInEx/BepInEx) |
 | Il2CppInterop.* | [Il2CppInterop](https://github.com/BepInEx/Il2CppInterop) |
 | Mono.Cecil.dll | [Mono.Cecil](https://github.com/jbevain/cecil) |
-| UnityEngine.* | Unity Engine (游戏自带) |
-| Assembly-CSharp.dll | Kingdom Two Crowns 游戏程序集（已公版化） |
-| 其他第三方程序集 | 游戏自带（DOTween, PlayFab, Rewired, Steamworks.NET 等） |
+| UnityEngine.* | Unity Engine (bundled with game) |
+| Assembly-CSharp.dll | Kingdom Two Crowns game assembly (publicized) |
+| Other third-party assemblies | Bundled with game (DOTween, PlayFab, Rewired, Steamworks.NET, etc.) |
 
-## 许可证
+## License
 
 [MIT License](LICENSE)
 
-> **注意**：本仓库仅包含引用程序集（DLL 文件），用于模组项目编译时引用。不包含任何游戏资源或反编译源代码。
+> **Note**: This repository contains only reference assemblies (DLL files) for compile-time referencing in mod projects. It does not include any game assets or decompiled source code.
