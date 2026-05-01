@@ -1,8 +1,8 @@
-<p align="right">English · <a href="README.zh-CN.md">中文</a></p>
+English | [中文](README.zh-CN.md)
 
 # KTC-ModDevLibs
 
-Kingdom Two Crowns modding reference library collection. Provides compile-time dependency assemblies for [BepInEx](https://github.com/BepInEx/BepInEx) mod projects, supporting both **IL2CPP** and **Mono** game versions.
+Kingdom Two Crowns modding reference library collection. Provides compile-time dependency assemblies based on the [BepInEx](https://github.com/BepInEx/BepInEx) game mod projects, supporting both **IL2CPP** and **Mono** game versions.
 
 ## Directory Structure
 

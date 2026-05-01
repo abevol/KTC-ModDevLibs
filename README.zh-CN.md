@@ -1,8 +1,8 @@
-<p align="right"><a href="README.md">English</a> · 中文</p>
+[English](README.md) | 中文
 
 # KTC-ModDevLibs
 
-Kingdom Two Crowns 模组开发引用库集合。为 [BepInEx](https://github.com/BepInEx/BepInEx) 模组项目提供编译时所需的依赖程序集引用，支持 **IL2CPP** 与 **Mono** 两种游戏版本。
+Kingdom Two Crowns 模组开发引用库集合。为基于 [BepInEx](https://github.com/BepInEx/BepInEx) 框架的游戏模组项目提供编译时所需的依赖程序集引用，支持 **IL2CPP** 与 **Mono** 两种游戏版本。
 
 ## 目录结构
 
@@ -17,7 +17,7 @@ BIE6_Mono/            # Mono 版本引用库
   BepInEx.AssemblyPublicizer.Cli.exe  # 程序集公版化 CLI
 ```
 
-## 使用方式
+## 使用方法
 
 ### 1. 添加为 Git Submodule
 
