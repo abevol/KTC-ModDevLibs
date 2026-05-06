@@ -221,13 +221,13 @@ jobs:
           echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
           echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
 
-          IL2CPP_PATH=$(echo "$HTML" | grep -oP '<a class="artifact-link"\s+href="\K[^"]*IL2CPP-win-x64[^"]*' | head -1)
-          MONO_PATH=$(echo "$HTML" | grep -oP '<a class="artifact-link"\s+href="\K[^"]*Mono-linux-x64[^"]*' | head -1)
+          IL2CPP_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' | grep 'IL2CPP-win-x64' | head -1)
+          MONO_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' | grep 'Mono-linux-x64' | head -1)
 
           echo "il2cpp_url=https://builds.bepinex.dev${IL2CPP_PATH}" >> $GITHUB_OUTPUT
           echo "mono_url=https://builds.bepinex.dev${MONO_PATH}" >> $GITHUB_OUTPUT
 
-          CHANGELOG=$(echo "$HTML" | grep -oP '<div class="changelog">.*?</div>' | head -1 | grep -oP '<li>\K[^<]*' | sed 's/<[^>]*>//g' || true)
+          CHANGELOG=$(echo "$HTML" | tr '\n' ' ' | grep -oP '<div class="changelog">.*?</div>' | grep -oP '<li>\K[^<]*' | sed 's/<[^>]*>//g' || true)
           echo "changelog<<CHANGELOG_EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "CHANGELOG_EOF" >> $GITHUB_OUTPUT
@@ -237,7 +237,12 @@ jobs:
           echo "New build: $BUILD_ID"
 
           if [ "$BUILD_ID" != "$OLD_BUILD" ] && [ -n "$BUILD_ID" ]; then
-            echo "bepinex_changed=true" >> $GITHUB_OUTPUT
+            if [ -z "$IL2CPP_PATH" ] && [ -z "$MONO_PATH" ]; then
+              echo "BepInEx build #$BUILD_ID detected but artifact URLs could not be extracted. Skipping."
+              echo "bepinex_changed=false" >> $GITHUB_OUTPUT
+            else
+              echo "bepinex_changed=true" >> $GITHUB_OUTPUT
+            fi
           else
             echo "bepinex_changed=false" >> $GITHUB_OUTPUT
           fi
