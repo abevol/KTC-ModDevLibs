@@ -27,22 +27,9 @@ jobs:
       - name: Download DepotDownloader
         run: |
           curl -sSL -o depotdownloader.zip \
-            "https://github.com/abevol/DepotDownloader/releases/download/v3.4.0/DepotDownloader-linux-x64.zip"
+            "https://github.com/abevol/DepotDownloader/releases/download/v3.4.1/DepotDownloader-linux-x64.zip"
           unzip -q depotdownloader.zip -d depotdownloader
           chmod +x depotdownloader/DepotDownloader
-
-      - name: Diagnose DepotDownloader
-        run: |
-          echo "=== File info ==="
-          file depotdownloader/DepotDownloader
-          echo "=== LDD ==="
-          ldd depotdownloader/DepotDownloader 2>&1 || true
-          echo "=== Help test ==="
-          ./depotdownloader/DepotDownloader 2>&1 || true
-          echo "=== Version test ==="
-          ./depotdownloader/DepotDownloader -V 2>&1 || true
-          echo "=== Account store test ==="
-          ./depotdownloader/DepotDownloader --account-store-path /tmp/test-dd -V 2>&1 || true
 
       - name: Restore Steam account config
         run: |
@@ -72,7 +59,7 @@ jobs:
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
-            -os linux -osarch 64 --debug \
+            -os linux -osarch 64 \
             -username "$STEAM_ACC" -remember-password \
             > /tmp/dd-linux.txt 2>&1 || LINUX_RC=$?
           echo "::group::Linux depot output"
@@ -84,7 +71,7 @@ jobs:
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
-            -os windows -osarch 64 --debug \
+            -os windows -osarch 64 \
             -username "$STEAM_ACC" -remember-password \
             > /tmp/dd-windows.txt 2>&1 || WINDOWS_RC=$?
           echo "::group::Windows depot output"
