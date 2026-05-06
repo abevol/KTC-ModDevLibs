@@ -54,6 +54,11 @@ jobs:
           tar -xzf il2cpp-cli.tar.gz -C il2cpp-cli
           chmod +x il2cpp-cli/il2cpp-interop-cli
 
+      - name: Install AssemblyPublicizer
+        run: |
+          dotnet tool install -g BepInEx.AssemblyPublicizer.Cli
+          echo "$HOME/.dotnet/tools" >> $GITHUB_PATH
+
       # ============================================================
       # 阶段一：游戏更新
       # ============================================================
@@ -77,7 +82,7 @@ jobs:
           WINDOWS_RC=0
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
-            -app 701160 -depot 701163 -manifest-only \
+            -app 701160 -depot 701161 -manifest-only \
             -os windows -osarch 64 \
             -username "$STEAM_ACC" -remember-password \
             > /tmp/dd-windows.txt 2>&1 || WINDOWS_RC=$?
@@ -141,6 +146,8 @@ jobs:
           rm -rf BIE6_Mono/Managed/*
           cp -r "$MANAGED_SRC"/* BIE6_Mono/Managed/
 
+          BepInEx.AssemblyPublicizer.Cli BIE6_Mono/Managed/Assembly-CSharp.dll --quiet
+
           echo "Managed files copied: $(ls BIE6_Mono/Managed/ | wc -l) files"
         env:
           STEAM_ACC: ${{ secrets.STEAM_ACC }}
@@ -153,13 +160,13 @@ jobs:
         run: |
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
-            -app 701160 -depot 701163 \
+            -app 701160 -depot 701161 \
             -manifest ${{ steps.game-check.outputs.windows_manifest }} \
             -filelist win-files.txt \
             -os windows -osarch 64 \
             -username "$STEAM_ACC" -remember-password
 
-          GAME_ROOT=$(find depots/701163 -name "KingdomTwoCrowns.exe" -type f | head -1)
+          GAME_ROOT=$(find depots/701161 -name "KingdomTwoCrowns.exe" -type f | head -1)
           if [ -z "$GAME_ROOT" ]; then
             echo "::error::Game root not found in downloaded depot (KingdomTwoCrowns.exe missing)"
             exit 1
@@ -223,13 +230,13 @@ jobs:
           echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
           echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
 
-          IL2CPP_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'IL2CPP-win-x64' | head -1)
-          MONO_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'Mono-linux-x64' | head -1)
+          IL2CPP_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'IL2CPP-win-x64' 2>/dev/null | head -1)
+          MONO_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'Mono-linux-x64' 2>/dev/null | head -1)
 
           echo "il2cpp_url=https://builds.bepinex.dev${IL2CPP_PATH}" >> $GITHUB_OUTPUT
           echo "mono_url=https://builds.bepinex.dev${MONO_PATH}" >> $GITHUB_OUTPUT
 
-          CHANGELOG=$(echo "$HTML" | tr '\n' ' ' | grep -oP '<div class="changelog">.*?</div>' | sed 's/<[^>]*>//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
+          CHANGELOG=$(echo "$HTML" | tr '\n' ' ' | grep -oP '<div class="changelog">.*?</div>' | head -1 | sed 's/<[^>]*>//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
           echo "changelog<<CHANGELOG_EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "CHANGELOG_EOF" >> $GITHUB_OUTPUT
