@@ -37,7 +37,12 @@ jobs:
           mkdir -p "$STORE_DIR"
           printf '%s' "${{ secrets.STEAM_ACCOUNT_CONFIG }}" | base64 -d > "$STORE_DIR/account.config"
           echo "Account config size: $(wc -c < "$STORE_DIR/account.config") bytes"
+          echo "account.config sha256: $(sha256sum "$STORE_DIR/account.config" | cut -d' ' -f1)"
+          echo "STEAM_ACC hash: $(echo -n "$STEAM_ACC" | sha256sum | cut -d' ' -f1)"
+          echo "base64 sha256: $(printf '%s' "${{ secrets.STEAM_ACCOUNT_CONFIG }}" | sha256sum | cut -d' ' -f1)"
           echo "store_dir=$STORE_DIR" >> $GITHUB_ENV
+        env:
+          STEAM_ACC: ${{ secrets.STEAM_ACC }}
 
       - name: Download il2cpp-interop-cli
         run: |
