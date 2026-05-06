@@ -6,7 +6,7 @@
 
 ## 触发方式
 
-- `schedule`：每周一 UTC 00:00（`cron: 0 0 * * 1`）
+- `schedule`：每天 UTC 18:00（`cron: 0 18 * * *`）
 - `workflow_dispatch`：手动触发
 
 ## Runner
