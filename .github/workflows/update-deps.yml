@@ -40,7 +40,7 @@ jobs:
           echo "account.config sha256: $(sha256sum "$STORE_DIR/account.config" | cut -d' ' -f1)"
           echo "STEAM_ACC hash: $(echo -n "$STEAM_ACC" | sha256sum | cut -d' ' -f1)"
           echo "base64 sha256: $(printf '%s' "${{ secrets.STEAM_ACCOUNT_CONFIG }}" | sha256sum | cut -d' ' -f1)"
-          echo "store_dir=$STORE_DIR" >> $GITHUB_ENV
+          echo "STORE_DIR=$STORE_DIR" >> $GITHUB_ENV
         env:
           STEAM_ACC: ${{ secrets.STEAM_ACC }}
 
