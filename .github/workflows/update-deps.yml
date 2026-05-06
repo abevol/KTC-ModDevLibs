@@ -8,6 +8,8 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
     permissions:
       contents: write
 
@@ -213,21 +215,21 @@ jobs:
         run: |
           HTML=$(curl -sSL "https://builds.bepinex.dev/projects/bepinex_be")
 
-          BUILD_ID=$(echo "$HTML" | grep -oP '<span class="artifact-id">#\K\d+' | head -1)
-          COMMIT_HASH=$(echo "$HTML" | grep -oP '<a class="hash-button" href="[^"]+">\K[^<]+' | head -1)
-          BUILD_DATE=$(echo "$HTML" | grep -oP '<span class="build-date">\K[^<]+' | head -1)
+          BUILD_ID=$(echo "$HTML" | grep -oP '<span class="artifact-id">#\K\d+' 2>/dev/null | head -1)
+          COMMIT_HASH=$(echo "$HTML" | grep -oP '<a class="hash-button" href="[^"]+">\K[^<]+' 2>/dev/null | head -1)
+          BUILD_DATE=$(echo "$HTML" | grep -oP '<span class="build-date">\K[^<]+' 2>/dev/null | head -1)
 
           echo "build_id=$BUILD_ID" >> $GITHUB_OUTPUT
           echo "commit_hash=$COMMIT_HASH" >> $GITHUB_OUTPUT
           echo "build_date=$BUILD_DATE" >> $GITHUB_OUTPUT
 
-          IL2CPP_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' | grep 'IL2CPP-win-x64' | head -1)
-          MONO_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' | grep 'Mono-linux-x64' | head -1)
+          IL2CPP_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'IL2CPP-win-x64' | head -1)
+          MONO_PATH=$(echo "$HTML" | grep -oP 'href="\K[^"]*' 2>/dev/null | grep 'Mono-linux-x64' | head -1)
 
           echo "il2cpp_url=https://builds.bepinex.dev${IL2CPP_PATH}" >> $GITHUB_OUTPUT
           echo "mono_url=https://builds.bepinex.dev${MONO_PATH}" >> $GITHUB_OUTPUT
 
-          CHANGELOG=$(echo "$HTML" | tr '\n' ' ' | grep -oP '<div class="changelog">.*?</div>' | grep -oP '<li>\K[^<]*' | sed 's/<[^>]*>//g' || true)
+          CHANGELOG=$(echo "$HTML" | tr '\n' ' ' | grep -oP '<div class="changelog">.*?</div>' | sed 's/<[^>]*>//g' | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' || true)
           echo "changelog<<CHANGELOG_EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "CHANGELOG_EOF" >> $GITHUB_OUTPUT
