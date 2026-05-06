@@ -67,27 +67,38 @@ jobs:
       - name: Check game manifest
         id: game-check
         run: |
-          LINUX_OUTPUT=$(./depotdownloader/DepotDownloader \
+          # 写入临时文件而非 $() 捕获，确保崩溃信息不丢失
+          ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
-            -os linux -osarch 64 \
-            -username "$STEAM_ACC" -remember-password 2>&1)
+            -os linux -osarch 64 --debug \
+            -username "$STEAM_ACC" -remember-password \
+            > /tmp/dd-linux.txt 2>&1; LINUX_RC=$?
           echo "::group::Linux depot output"
-          echo "$LINUX_OUTPUT"
+          cat /tmp/dd-linux.txt
+          echo "Linux exit code: $LINUX_RC"
           echo "::endgroup::"
 
-          WINDOWS_OUTPUT=$(./depotdownloader/DepotDownloader \
+          ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
-            -os windows -osarch 64 \
-            -username "$STEAM_ACC" -remember-password 2>&1)
+            -os windows -osarch 64 --debug \
+            -username "$STEAM_ACC" -remember-password \
+            > /tmp/dd-windows.txt 2>&1; WINDOWS_RC=$?
           echo "::group::Windows depot output"
-          echo "$WINDOWS_OUTPUT"
+          cat /tmp/dd-windows.txt
+          echo "Windows exit code: $WINDOWS_RC"
           echo "::endgroup::"
 
-          LINUX_MANIFEST=$(echo "$LINUX_OUTPUT" | grep -oP 'Manifest \K\d+')
-          WINDOWS_MANIFEST=$(echo "$WINDOWS_OUTPUT" | grep -oP 'Manifest \K\d+')
-          LINUX_TIME=$(echo "$LINUX_OUTPUT" | grep -oP 'Manifest \d+ \(\K[^)]+')
+          if [ $LINUX_RC -ne 0 ] && [ $WINDOWS_RC -ne 0 ]; then
+            echo "Both Linux and Windows DepotDownloader failed. Skipping game update."
+            echo "game_changed=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          LINUX_MANIFEST=$(grep -oP 'Manifest \K\d+' /tmp/dd-linux.txt || true)
+          WINDOWS_MANIFEST=$(grep -oP 'Manifest \K\d+' /tmp/dd-windows.txt || true)
+          LINUX_TIME=$(grep -oP 'Manifest \d+ \(\K[^)]+' /tmp/dd-linux.txt || true)
 
           echo "linux_manifest=$LINUX_MANIFEST" >> $GITHUB_OUTPUT
           echo "windows_manifest=$WINDOWS_MANIFEST" >> $GITHUB_OUTPUT
