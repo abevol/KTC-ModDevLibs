@@ -148,7 +148,7 @@ jobs:
           rm -rf BIE6_Mono/Managed/*
           cp -r "$MANAGED_SRC"/* BIE6_Mono/Managed/
 
-          assembly-publicizer BIE6_Mono/Managed/Assembly-CSharp.dll --quiet
+          assembly-publicizer BIE6_Mono/Managed/Assembly-CSharp.dll
 
           echo "Managed files copied: $(ls BIE6_Mono/Managed/ | wc -l) files"
         env:
