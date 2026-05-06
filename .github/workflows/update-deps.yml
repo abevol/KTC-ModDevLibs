@@ -27,9 +27,16 @@ jobs:
       - name: Download DepotDownloader
         run: |
           curl -sSL -o depotdownloader.zip \
-            "https://github.com/SteamRE/DepotDownloader/releases/download/DepotDownloader_3.4.0/DepotDownloader-linux-x64.zip"
+            "https://github.com/abevol/DepotDownloader/releases/download/v3.4.0/DepotDownloader-linux-x64.zip"
           unzip -q depotdownloader.zip -d depotdownloader
           chmod +x depotdownloader/DepotDownloader
+
+      - name: Restore Steam account config
+        run: |
+          STORE_DIR="${{ runner.temp }}/depotdownloader-store"
+          mkdir -p "$STORE_DIR"
+          echo "${{ secrets.STEAM_ACCOUNT_CONFIG }}" | base64 -d > "$STORE_DIR/account.config"
+          echo "store_dir=$STORE_DIR" >> $GITHUB_ENV
 
       - name: Download il2cpp-interop-cli
         run: |
@@ -47,17 +54,19 @@ jobs:
         id: game-check
         run: |
           LINUX_OUTPUT=$(./depotdownloader/DepotDownloader \
+            --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
             -os linux -osarch 64 \
-            -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password 2>&1)
+            -username "$STEAM_ACC" -remember-password 2>&1)
           echo "::group::Linux depot output"
           echo "$LINUX_OUTPUT"
           echo "::endgroup::"
 
           WINDOWS_OUTPUT=$(./depotdownloader/DepotDownloader \
+            --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
             -os windows -osarch 64 \
-            -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password 2>&1)
+            -username "$STEAM_ACC" -remember-password 2>&1)
           echo "::group::Windows depot output"
           echo "$WINDOWS_OUTPUT"
           echo "::endgroup::"
@@ -85,7 +94,7 @@ jobs:
           fi
         env:
           STEAM_ACC: ${{ secrets.STEAM_ACC }}
-          STEAM_PWD: ${{ secrets.STEAM_PWD }}
+
 
       - name: Download Linux Managed files
         id: download-managed
@@ -93,11 +102,12 @@ jobs:
         continue-on-error: true
         run: |
           ./depotdownloader/DepotDownloader \
+            --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 \
             -manifest ${{ steps.game-check.outputs.linux_manifest }} \
             -filelist linux-files.txt \
             -os linux -osarch 64 \
-            -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password
+            -username "$STEAM_ACC" -remember-password
 
           MANAGED_SRC=$(find depots/701163 -name "Accessibility.dll" -path "*/Managed/*" | head -1)
           if [ -z "$MANAGED_SRC" ]; then
@@ -113,7 +123,7 @@ jobs:
           echo "Managed files copied: $(ls BIE6_Mono/Managed/ | wc -l) files"
         env:
           STEAM_ACC: ${{ secrets.STEAM_ACC }}
-          STEAM_PWD: ${{ secrets.STEAM_PWD }}
+
 
       - name: Download Windows files and generate interop
         id: generate-interop
@@ -121,11 +131,12 @@ jobs:
         continue-on-error: true
         run: |
           ./depotdownloader/DepotDownloader \
+            --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 \
             -manifest ${{ steps.game-check.outputs.windows_manifest }} \
             -filelist win-files.txt \
             -os windows -osarch 64 \
-            -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password
+            -username "$STEAM_ACC" -remember-password
 
           GAME_ROOT=$(find depots/701163 -name "KingdomTwoCrowns.exe" -type f | head -1)
           if [ -z "$GAME_ROOT" ]; then
@@ -144,7 +155,7 @@ jobs:
           echo "Interop files generated: $(ls BIE6_IL2CPP/interop/ | wc -l) files"
         env:
           STEAM_ACC: ${{ secrets.STEAM_ACC }}
-          STEAM_PWD: ${{ secrets.STEAM_PWD }}
+
 
       - name: Commit game updates
         id: commit-game
