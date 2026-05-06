@@ -99,7 +99,12 @@ jobs:
             -os linux -osarch 64 \
             -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password
 
-          MANAGED_SRC=$(find depots/701163 -name "Accessibility.dll" -path "*/Managed/*" | head -1 | xargs dirname)
+          MANAGED_SRC=$(find depots/701163 -name "Accessibility.dll" -path "*/Managed/*" | head -1)
+          if [ -z "$MANAGED_SRC" ]; then
+            echo "::error::Managed files not found in downloaded depot"
+            exit 1
+          fi
+          MANAGED_SRC=$(dirname "$MANAGED_SRC")
           echo "Managed source: $MANAGED_SRC"
 
           rm -rf BIE6_Mono/Managed/*
@@ -122,7 +127,12 @@ jobs:
             -os windows -osarch 64 \
             -username "$STEAM_ACC" -password "$STEAM_PWD" -remember-password
 
-          GAME_ROOT=$(find depots/701163 -name "KingdomTwoCrowns.exe" -type f | head -1 | xargs dirname)
+          GAME_ROOT=$(find depots/701163 -name "KingdomTwoCrowns.exe" -type f | head -1)
+          if [ -z "$GAME_ROOT" ]; then
+            echo "::error::Game root not found in downloaded depot (KingdomTwoCrowns.exe missing)"
+            exit 1
+          fi
+          GAME_ROOT=$(dirname "$GAME_ROOT")
           echo "Game root: $GAME_ROOT"
 
           rm -rf BIE6_IL2CPP/interop/*
@@ -187,7 +197,7 @@ jobs:
           echo "il2cpp_url=https://builds.bepinex.dev${IL2CPP_PATH}" >> $GITHUB_OUTPUT
           echo "mono_url=https://builds.bepinex.dev${MONO_PATH}" >> $GITHUB_OUTPUT
 
-          CHANGELOG=$(echo "$HTML" | grep -oP '<div class="changelog">.*?</div>' | head -1 | grep -oP '<li>\K[^<]*' | sed 's/<[^>]*>//g')
+          CHANGELOG=$(echo "$HTML" | grep -oP '<div class="changelog">.*?</div>' | head -1 | grep -oP '<li>\K[^<]*' | sed 's/<[^>]*>//g' || true)
           echo "changelog<<CHANGELOG_EOF" >> $GITHUB_OUTPUT
           echo "$CHANGELOG" >> $GITHUB_OUTPUT
           echo "CHANGELOG_EOF" >> $GITHUB_OUTPUT
@@ -235,6 +245,8 @@ jobs:
         if: |
           steps.bepinex-check.outputs.bepinex_changed == 'true' &&
           (steps.update-il2cpp-core.outcome == 'success' || steps.update-mono-core.outcome == 'success')
+        env:
+          CHANGELOG: ${{ steps.bepinex-check.outputs.changelog }}
         run: |
           jq --arg id "${{ steps.bepinex-check.outputs.build_id }}" \
              --arg hash "${{ steps.bepinex-check.outputs.commit_hash }}" \
@@ -257,6 +269,6 @@ jobs:
           BUILD_DATE="${{ steps.bepinex-check.outputs.build_date }}"
 
           git commit -m "$(printf 'chore: update BepInEx BE to #%s (%s)\n\n- Build date: %s\n- %s' \
-            "$BUILD_ID" "$COMMIT_HASH" "$BUILD_DATE" "${{ steps.bepinex-check.outputs.changelog }}")"
+            "$BUILD_ID" "$COMMIT_HASH" "$BUILD_DATE" "$CHANGELOG")"
 
           git push
