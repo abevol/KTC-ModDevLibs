@@ -67,24 +67,26 @@ jobs:
       - name: Check game manifest
         id: game-check
         run: |
-          # 写入临时文件而非 $() 捕获，确保崩溃信息不丢失
+          # 使用 || 捕获退出码，避免 set -e 被 SIGABRT 触发
+          LINUX_RC=0
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
             -os linux -osarch 64 --debug \
             -username "$STEAM_ACC" -remember-password \
-            > /tmp/dd-linux.txt 2>&1; LINUX_RC=$?
+            > /tmp/dd-linux.txt 2>&1 || LINUX_RC=$?
           echo "::group::Linux depot output"
           cat /tmp/dd-linux.txt
           echo "Linux exit code: $LINUX_RC"
           echo "::endgroup::"
 
+          WINDOWS_RC=0
           ./depotdownloader/DepotDownloader \
             --account-store-path "$STORE_DIR" \
             -app 701160 -depot 701163 -manifest-only \
             -os windows -osarch 64 --debug \
             -username "$STEAM_ACC" -remember-password \
-            > /tmp/dd-windows.txt 2>&1; WINDOWS_RC=$?
+            > /tmp/dd-windows.txt 2>&1 || WINDOWS_RC=$?
           echo "::group::Windows depot output"
           cat /tmp/dd-windows.txt
           echo "Windows exit code: $WINDOWS_RC"
