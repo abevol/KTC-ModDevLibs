@@ -1,0 +1,12 @@
+{
+  "game": {
+    "linuxManifestId": "0",
+    "windowsManifestId": "0",
+    "updatedAt": ""
+  },
+  "bepinex": {
+    "buildId": "0",
+    "commitHash": "",
+    "updatedAt": ""
+  }
+}

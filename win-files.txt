@@ -1,0 +1,4 @@
+KingdomTwoCrowns.exe
+GameAssembly.dll
+KingdomTwoCrowns_Data/globalgamemanagers
+KingdomTwoCrowns_Data/il2cpp_data/Metadata/global-metadata.dat
