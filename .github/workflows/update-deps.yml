@@ -284,6 +284,26 @@ jobs:
 
           echo "Mono core files: $(ls BIE6_Mono/core/ | wc -l) files"
 
+      - name: Apply custom patches (Cpp2IL + Il2CppInterop)
+        id: apply-custom-patches
+        if: |
+          steps.bepinex-check.outputs.bepinex_changed == 'true' &&
+          steps.update-il2cpp-core.outcome == 'success'
+        run: |
+          echo "::group::Apply Cpp2IL custom patch"
+          curl -sSL "https://github.com/abevol/Cpp2IL/releases/download/v2022.1.0-asmresolver-beta.5/Cpp2IL-net6.0-asmresolver-beta.5.zip" -o cpp2il-patch.zip
+          unzip -qo cpp2il-patch.zip -d BIE6_IL2CPP/core/
+          echo "Cpp2IL patch applied"
+          echo "::endgroup::"
+
+          echo "::group::Apply Il2CppInterop custom patch"
+          curl -sSL "https://github.com/abevol/Il2CppInterop/releases/download/v1.5.1-improve-genericmethod-signatures/Il2CppInterop-v1.5.1-net6.0.zip" -o il2cppinterop-patch.zip
+          unzip -qo il2cppinterop-patch.zip -d BIE6_IL2CPP/core/
+          echo "Il2CppInterop patch applied"
+          echo "::endgroup::"
+
+          echo "Patches applied to BIE6_IL2CPP/core/"
+
       - name: Commit BepInEx updates
         id: commit-bepinex
         if: |
