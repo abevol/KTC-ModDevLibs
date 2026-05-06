@@ -27,7 +27,7 @@ jobs:
       - name: Download DepotDownloader
         run: |
           curl -sSL -o depotdownloader.zip \
-            "https://github.com/abevol/DepotDownloader/releases/download/v3.4.1/DepotDownloader-linux-x64.zip"
+            "https://github.com/abevol/DepotDownloader/releases/download/v3.4.2/DepotDownloader-linux-x64-v3.4.2.zip"
           unzip -q depotdownloader.zip -d depotdownloader
           chmod +x depotdownloader/DepotDownloader
 
