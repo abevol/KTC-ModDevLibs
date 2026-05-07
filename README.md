@@ -59,6 +59,24 @@ After adding the submodule, add references in your `.csproj`:
 
 > **Cloning an existing project**: When cloning a project that already uses this submodule, run `git clone --recurse-submodules <url>` to pull everything at once. If you've already cloned without submodules, run `git submodule update --init --recursive`.
 
+## Automated Updates
+
+This repository is automatically updated via GitHub Actions [workflow](.github/workflows/update-deps.yml), eliminating manual maintenance.
+
+- **Schedule**: Daily at UTC 18:00 via cron, with manual trigger support (`workflow_dispatch`)
+- **Phase 1 — Game Update**: Uses [DepotDownloader](https://github.com/abevol/DepotDownloader) to detect game manifest changes, automatically downloads updated managed assemblies and generates IL2CPP interop files
+- **Phase 2 — BepInEx Update**: Monitors [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) builds, updates IL2CPP/Mono core runtimes, and applies custom Cpp2IL/Il2CppInterop patches
+- **Version Tracking**: `.update-state.json` records component versions (game manifest IDs, BepInEx build ID) to avoid redundant updates
+
+### Required Secrets
+
+The workflow requires the following [GitHub Secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions):
+
+| Secret | Description |
+|--------|-------------|
+| `STEAM_ACC` | Steam account username for downloading game depots |
+| `STEAM_ACCOUNT_CONFIG` | Base64-encoded Steam `account.config` for authentication |
+
 ## Assembly Sources
 
 | Assembly | Source |

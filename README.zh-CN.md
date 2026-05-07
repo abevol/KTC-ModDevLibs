@@ -59,6 +59,24 @@ YourModProject/
 
 > **克隆已有项目**：克隆已使用本 submodule 的项目时，用 `git clone --recurse-submodules <url>` 可一次性拉取所有内容。如果已克隆但未拉取 submodule，运行 `git submodule update --init --recursive`。
 
+## 自动化更新
+
+本仓库通过 GitHub Actions [workflow](.github/workflows/update-deps.yml) 自动更新依赖，无需手动维护。
+
+- **触发**: 每天 UTC 18:00 定时运行，支持手动触发（`workflow_dispatch`）
+- **阶段一 — 游戏更新**: 使用 [DepotDownloader](https://github.com/abevol/DepotDownloader) 检测游戏清单变化，自动下载最新托管程序集并生成 IL2CPP interop 文件
+- **阶段二 — BepInEx 更新**: 监控 [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) 最新构建，更新 IL2CPP/Mono core 运行时并应用自定义 Cpp2IL/Il2CppInterop 补丁
+- **版本追踪**: `.update-state.json` 记录各组件版本（游戏 manifest ID、BepInEx build ID），避免重复更新
+
+### 所需 Secrets
+
+Workflow 需要在仓库中配置以下 [GitHub Secrets](https://docs.github.com/en/actions/security-for-github-actions/security-guides/using-secrets-in-github-actions)：
+
+| Secret | 说明 |
+|--------|------|
+| `STEAM_ACC` | Steam 账号用户名（用于下载游戏 depot） |
+| `STEAM_ACCOUNT_CONFIG` | Base64 编码的 Steam `account.config`（用于身份验证） |
+
 ## 程序集来源
 
 | 程序集 | 来源 |
