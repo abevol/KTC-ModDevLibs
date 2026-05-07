@@ -65,7 +65,7 @@ YourModProject/
 
 - **触发**: 每天 UTC 18:00 定时运行，支持手动触发（`workflow_dispatch`）
 - **阶段一 — 游戏更新**: 使用 [DepotDownloader](https://github.com/abevol/DepotDownloader) 检测游戏清单变化，自动下载最新托管程序集并生成 IL2CPP interop 文件
-- **阶段二 — BepInEx 更新**: 监控 [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) 最新构建，更新 IL2CPP/Mono core 运行时并应用自定义 Cpp2IL/Il2CppInterop 补丁
+- **阶段二 — BepInEx 更新**: 监控 [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) 最新构建，更新 IL2CPP/Mono core 运行时并应用自定义 Cpp2IL/Il2CppInterop 补丁，解决与游戏不兼容导致崩溃的问题（[Issue #24](https://github.com/abevol/KingdomMod/issues/24)、[commit 7795dc4](https://github.com/abevol/KingdomMod/commit/7795dc417126ef8c8b8b7f92bd92974c7062650f)）
 - **版本追踪**: `.update-state.json` 记录各组件版本（游戏 manifest ID、BepInEx build ID），避免重复更新
 
 ### 所需 Secrets

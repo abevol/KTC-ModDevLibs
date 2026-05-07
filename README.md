@@ -65,7 +65,7 @@ This repository is automatically updated via GitHub Actions [workflow](.github/w
 
 - **Schedule**: Daily at UTC 18:00 via cron, with manual trigger support (`workflow_dispatch`)
 - **Phase 1 — Game Update**: Uses [DepotDownloader](https://github.com/abevol/DepotDownloader) to detect game manifest changes, automatically downloads updated managed assemblies and generates IL2CPP interop files
-- **Phase 2 — BepInEx Update**: Monitors [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) builds, updates IL2CPP/Mono core runtimes, and applies custom Cpp2IL/Il2CppInterop patches
+- **Phase 2 — BepInEx Update**: Monitors [BepInEx Bleeding Edge](https://builds.bepinex.dev/projects/bepinex_be) builds, updates IL2CPP/Mono core runtimes, and applies custom Cpp2IL/Il2CppInterop patches to fix game incompatibility issues that cause crashes ([Issue #24](https://github.com/abevol/KingdomMod/issues/24), [commit 7795dc4](https://github.com/abevol/KingdomMod/commit/7795dc417126ef8c8b8b7f92bd92974c7062650f))
 - **Version Tracking**: `.update-state.json` records component versions (game manifest IDs, BepInEx build ID) to avoid redundant updates
 
 ### Required Secrets
