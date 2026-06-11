@@ -536,6 +536,13 @@
                 Writes the config to disk.
             </summary>
         </member>
+        <member name="M:BepInEx.Configuration.ConfigFile.TrySave">
+            <summary>
+                Writes the config to disk like <see cref="M:BepInEx.Configuration.ConfigFile.Save" />, but logs and swallows I/O failures (e.g. a read-only
+                or locked config file) instead of throwing. Used only for the creation-time saves (initial file write and
+                new-entry binds), which can run before logging is up; explicit saves and setting changes still throw.
+            </summary>
+        </member>
         <member name="M:BepInEx.Configuration.ConfigFile.GetSetting``1(BepInEx.Configuration.ConfigDefinition)">
             <summary>
                 Access one of the existing settings. If the setting has not been added yet, null is returned.
@@ -1499,6 +1506,11 @@
         <member name="P:BepInEx.Paths.BepInExVersion">
             <summary>
                BepInEx version.
+            </summary>
+        </member>
+        <member name="P:BepInEx.Paths.DisplayBepInExVersion">
+            <summary>
+               BepInEx version without the build suffix.
             </summary>
         </member>
         <member name="P:BepInEx.Paths.ManagedPath">
