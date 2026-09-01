@@ -41,6 +41,14 @@
                 The GameObject that all plugins are attached to as components.
             </summary>
         </member>
+        <member name="M:BepInEx.Unity.Mono.Bootstrap.UnityChainloader.TryGetUnityVersion">
+            <summary>
+                Reads the runtime Unity version, returning null if it is unavailable.
+                Unity's managed code stripper can remove Application.unityVersion entirely, in which case
+                touching it throws MissingMethodException. The version is only used for an informational
+                log line, so it must not be able to abort chainloader initialisation.
+            </summary>
+        </member>
         <member name="T:BepInEx.Unity.Mono.Configuration.KeyboardShortcut">
             <summary>
                 A keyboard shortcut that can be used in Update method to check if user presses a key combo. The shortcut is only
